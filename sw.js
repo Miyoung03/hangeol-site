@@ -1,0 +1,5 @@
+const CACHE='hangeol-singlefile-r82-20261018';
+const FILES=['./','./index.html','./manifest.webmanifest?v=20261018-r82-pastunmet','./icon-192.png?v=20261018-r82-pastunmet','./icon-180.png?v=20261018-r82-pastunmet','./icon-512.png?v=20261018-r82-pastunmet','./logo-hanbakwi-en.png?v=20261018-r82-pastunmet','./fonts/GangwonEdu_OTFLightA.woff2?v=20261018-r82-pastunmet','./fonts/GangwonEdu_OTFBoldA.woff2?v=20261018-r82-pastunmet'];
+self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)).then(()=>self.skipWaiting()))});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('hangeol-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET'||new URL(e.request.url).origin!==self.location.origin)return;e.respondWith(fetch(e.request).then(r=>{if(r.ok){const copy=r.clone();caches.open(CACHE).then(c=>c.put(e.request,copy))}return r}).catch(()=>caches.match(e.request))) });
